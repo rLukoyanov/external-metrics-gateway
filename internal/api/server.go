@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 
@@ -50,12 +51,14 @@ func (s *Server) discovery(w http.ResponseWriter, _ *http.Request) {
 func (s *Server) getMetric(w http.ResponseWriter, r *http.Request) {
 	ns, metric, err := parseMetricPath(r.URL.Path)
 	if err != nil {
+		log.Printf("parse metric path %s failed: %v", r.URL.Path, err)
 		writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	list, err := s.router.Fetch(r.Context(), ns, metric, r.URL.Path, r.URL.Query())
 	if err != nil {
+		log.Printf("fetch metric %s/%s failed: %v", ns, metric, err)
 		writeError(w, http.StatusBadGateway, err.Error())
 		return
 	}
@@ -65,11 +68,13 @@ func (s *Server) getMetric(w http.ResponseWriter, r *http.Request) {
 func parseMetricPath(path string) (namespace string, metric string, err error) {
 	base := "/apis/external.metrics.k8s.io/v1beta1/namespaces/"
 	if !strings.HasPrefix(path, base) {
+		log.Printf("parse metric path %s failed: %v", path, err)
 		return "", "", errors.New("invalid path")
 	}
 	rest := strings.TrimPrefix(path, base)
 	parts := strings.SplitN(rest, "/", 2)
 	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+		log.Printf("parse metric path %s failed: %v", path, err)
 		return "", "", errors.New("expected /namespaces/{namespace}/{metric}")
 	}
 	return parts[0], parts[1], nil

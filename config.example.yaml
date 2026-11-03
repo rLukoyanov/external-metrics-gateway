@@ -3,10 +3,12 @@ listenAddr: ":8080"
 defaultSource: prometheus
 
 prometheus:
-  url: "http://prometheus-server.monitoring.svc.cluster.local"
+  # Example for Helm release name "prom" from prometheus-community chart.
+  url: "http://prom-prometheus-server.monitoring.svc.cluster.local"
 
 keda:
-  url: "http://keda-metrics-apiserver.keda.svc.cluster.local"
+  # Example for Helm release name "keda" from kedacore chart.
+  url: "http://keda-operator-metrics-apiserver.keda.svc.cluster.local"
 
 routes:
   - prefix: "prom_"
