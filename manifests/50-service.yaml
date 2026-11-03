@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-metrics-gateway
+  namespace: external-metrics
+spec:
+  selector:
+    app: external-metrics-gateway
+  ports:
+    - name: https
+      port: 443
+      targetPort: https
+      protocol: TCP

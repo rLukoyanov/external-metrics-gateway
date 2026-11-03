@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: external-metrics-gateway-config
+  namespace: external-metrics
+data:
+  config.yaml: |
+    listenAddr: ":8443"
+
+    defaultSource: prometheus
+
+    prometheus:
+      url: "http://prometheus-server.monitoring.svc.cluster.local"
+
+    keda:
+      url: "http://keda-metrics-apiserver.keda.svc.cluster.local"
+
+    routes:
+      - prefix: "prom_"
+        source: "prometheus"
+        stripPrefix: true
+      - prefix: "keda_"
+        source: "keda"
+        stripPrefix: true

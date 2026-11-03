@@ -1,0 +1,23 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: external-metrics-selfsigned
+  namespace: external-metrics
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: external-metrics-gateway-serving-cert
+  namespace: external-metrics
+spec:
+  secretName: external-metrics-gateway-tls
+  duration: 2160h
+  renewBefore: 360h
+  issuerRef:
+    name: external-metrics-selfsigned
+    kind: Issuer
+  dnsNames:
+    - external-metrics-gateway.external-metrics.svc
+    - external-metrics-gateway.external-metrics.svc.cluster.local

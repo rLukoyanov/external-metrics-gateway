@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-metrics-gateway
+  namespace: external-metrics
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: external-metrics-gateway
+  template:
+    metadata:
+      labels:
+        app: external-metrics-gateway
+    spec:
+      serviceAccountName: external-metrics-gateway
+      containers:
+        - name: gateway
+          image: ghcr.io/your-org/external-metrics-gateway:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            - -config=/etc/gateway/config.yaml
+            - -tls-cert-file=/tls/tls.crt
+            - -tls-key-file=/tls/tls.key
+          ports:
+            - name: https
+              containerPort: 8443
+          readinessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /healthz
+              port: https
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /healthz
+              port: https
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: config
+              mountPath: /etc/gateway
+              readOnly: true
+            - name: tls
+              mountPath: /tls
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: external-metrics-gateway-config
+        - name: tls
+          secret:
+            secretName: external-metrics-gateway-tls
