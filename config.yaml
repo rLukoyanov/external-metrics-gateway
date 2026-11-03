@@ -1,0 +1,17 @@
+listenAddr: ":8080"
+
+defaultSource: prometheus
+
+prometheus:
+  url: "http://localhost:9090"
+
+keda:
+  url: "http://localhost:8081"
+
+routes:
+  - prefix: "prom_"
+    source: "prometheus"
+    stripPrefix: true
+  - prefix: "keda_"
+    source: "keda"
+    stripPrefix: true

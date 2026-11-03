@@ -1,0 +1,17 @@
+listenAddr: ":8080"
+
+defaultSource: prometheus
+
+prometheus:
+  url: "http://prometheus-server.monitoring.svc.cluster.local"
+
+keda:
+  url: "http://keda-metrics-apiserver.keda.svc.cluster.local"
+
+routes:
+  - prefix: "prom_"
+    source: "prometheus"
+    stripPrefix: true
+  - prefix: "keda_"
+    source: "keda"
+    stripPrefix: true
